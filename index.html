@@ -1,0 +1,675 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LearnIQ - AI Personalized Learning Platform</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root {
+  --primary:#5145cd;
+  --secondary:#7669ed;
+  --bg:#f6f7fc;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  font-family:Inter,"Segoe UI",Arial,sans-serif;
+  background:var(--bg);
+  color:#20243a;
+}
+.sidebar {
+  width:245px;
+  background:#fff;
+  border-right:1px solid #e8e9f1;
+  position:fixed;
+  inset:0 auto 0 0;
+  padding:25px 18px;
+  z-index:10;
+}
+.main { margin-left:245px; padding:30px; }
+.nav-btn {
+  display:flex; align-items:center; gap:12px;
+  width:100%; padding:13px 14px; border-radius:12px;
+  text-align:left; color:#74768c; margin:5px 0;
+  transition:.2s;
+}
+.nav-btn:hover,.nav-btn.active {
+  background:#f0efff; color:var(--primary); font-weight:600;
+}
+.card {
+  background:white; border:1px solid #ebebf3;
+  border-radius:17px; padding:22px;
+  box-shadow:0 3px 15px rgba(30,30,80,.035);
+}
+.page { display:none; animation:fade .25s ease; }
+.page.active { display:block; }
+@keyframes fade {
+  from { opacity:0; transform:translateY(8px); }
+  to { opacity:1; transform:translateY(0); }
+}
+.primary {
+  background:var(--primary); color:white;
+  padding:11px 18px; border-radius:10px;
+  font-weight:600; transition:.2s;
+}
+.primary:hover { background:#4035b4; }
+input,select,textarea {
+  width:100%; padding:12px;
+  border:1px solid #dddfea; border-radius:10px;
+  outline:none; background:white;
+}
+input:focus,select:focus,textarea:focus {
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px #5145cd15;
+}
+.progress {
+  height:9px; border-radius:20px;
+  background:#eeeefa; overflow:hidden;
+}
+.progress div {
+  height:100%; background:var(--secondary);
+  border-radius:20px; transition:.3s;
+}
+.chat {
+  padding:12px 15px; border-radius:13px;
+  margin:10px 0; max-width:90%;
+  line-height:1.6; white-space:pre-wrap;
+}
+.bot { background:#f0efff; color:#37316e; }
+.user { background:#5145cd; color:white; margin-left:auto; }
+.task.done { opacity:.65; }
+.task.done .task-name { text-decoration:line-through; }
+.mobile-menu { display:none; }
+@media(max-width:800px) {
+  .sidebar { transform:translateX(-100%); transition:.3s; }
+  .sidebar.open { transform:translateX(0); }
+  .main { margin-left:0; padding:18px; }
+  .mobile-menu { display:inline-block; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="flex items-center gap-3 mb-10">
+    <div class="bg-indigo-600 text-white rounded-xl p-3 text-xl">✦</div>
+    <div>
+      <h1 class="text-xl font-extrabold text-indigo-700">LearnIQ</h1>
+      <p class="text-xs text-gray-400">Learn Smarter with AI</p>
+    </div>
+  </div>
+
+  <p class="text-xs font-bold text-gray-400 uppercase mb-3 px-3">Workspace</p>
+
+  <button class="nav-btn active" onclick="showPage('dashboard',this)">
+    <span>▦</span> Student Dashboard
+  </button>
+
+  <button class="nav-btn" onclick="showPage('tutor',this)">
+    <span>✧</span> AI Tutor
+  </button>
+
+  <button class="nav-btn" onclick="showPage('planner',this)">
+    <span>▤</span> Smart Study Planner
+  </button>
+
+  <div class="mt-12 p-4 rounded-xl bg-indigo-50">
+    <div class="text-2xl mb-2">🎯</div>
+    <h3 class="font-bold text-indigo-800">Keep Learning!</h3>
+    <p class="text-xs text-indigo-600 mt-1">
+      Small steps every day lead to big achievements.
+    </p>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<header class="flex justify-between items-center mb-8 gap-3">
+  <div class="flex items-center gap-3">
+    <button class="mobile-menu text-xl" onclick="toggleMenu()">☰</button>
+    <div>
+      <h2 class="font-bold text-xl" id="header-title">Student Dashboard</h2>
+      <p class="text-sm text-gray-500">Your personal learning space</p>
+    </div>
+  </div>
+  <div class="flex items-center gap-3">
+    <div class="text-right hidden sm:block">
+      <p class="font-semibold text-sm">Student</p>
+      <p class="text-xs text-gray-400">Learner Account</p>
+    </div>
+    <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">S</div>
+  </div>
+</header>
+
+<!-- ================= DASHBOARD ================= -->
+
+<section id="dashboard" class="page active">
+
+  <div class="rounded-2xl p-7 sm:p-9 text-white mb-6"
+       style="background:linear-gradient(110deg,#5145cd,#8b75ed)">
+    <p class="text-indigo-100 text-sm mb-2">WELCOME TO LEARNIQ ✨</p>
+    <h2 class="text-2xl sm:text-3xl font-bold mb-2">
+      Learn at Your Own Pace!
+    </h2>
+    <p class="text-sm text-indigo-100 mb-5">
+      Your AI learning companion helps you achieve your goals.
+    </p>
+    <button class="bg-white text-indigo-700 px-5 py-2.5 rounded-xl font-semibold"
+      onclick="showPage('tutor',document.querySelectorAll('.nav-btn')[1])">
+      Ask AI Tutor →
+    </button>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+
+    <div class="card">
+      <p class="text-sm text-gray-500">Study Tasks Completed</p>
+      <h2 class="text-3xl font-bold mt-3" id="completed-stat">0</h2>
+      <p class="text-xs text-green-600 mt-2">Keep up the good work!</p>
+    </div>
+
+    <div class="card">
+      <p class="text-sm text-gray-500">Total Study Tasks</p>
+      <h2 class="text-3xl font-bold mt-3" id="total-stat">0</h2>
+      <p class="text-xs text-gray-400 mt-2">Your learning goals</p>
+    </div>
+
+    <div class="card">
+      <p class="text-sm text-gray-500">Completion Rate</p>
+      <h2 class="text-3xl font-bold mt-3" id="rate-stat">0%</h2>
+      <p class="text-xs text-indigo-500 mt-2">Overall progress</p>
+    </div>
+
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+    <div class="card">
+      <div class="flex justify-between items-center mb-5">
+        <h3 class="font-bold">Learning Progress</h3>
+        <span class="text-xs text-gray-400">Overall</span>
+      </div>
+
+      <div class="flex justify-center py-5">
+        <div class="w-36 h-36 rounded-full flex items-center justify-center"
+             style="background:conic-gradient(#6558dd 0deg, #6558dd var(--angle), #eeeefa var(--angle), #eeeefa 360deg)"
+             id="progress-circle">
+          <div class="w-28 h-28 bg-white rounded-full flex flex-col justify-center items-center">
+            <span class="text-3xl font-bold" id="circle-rate">0%</span>
+            <span class="text-xs text-gray-400">Completed</span>
+          </div>
+        </div>
+      </div>
+      <div class="progress mt-3">
+        <div id="overall-progress" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="font-bold mb-4">Quick Actions</h3>
+
+      <button onclick="showPage('tutor',document.querySelectorAll('.nav-btn')[1])"
+        class="w-full p-4 rounded-xl bg-purple-50 text-left mb-3">
+        <span class="text-xl">🤖</span>
+        <p class="font-semibold mt-2">Ask AI Tutor</p>
+        <p class="text-xs text-gray-500">Understand any difficult topic</p>
+      </button>
+
+      <button onclick="showPage('planner',document.querySelectorAll('.nav-btn')[2])"
+        class="w-full p-4 rounded-xl bg-blue-50 text-left">
+        <span class="text-xl">📅</span>
+        <p class="font-semibold mt-2">Create Study Plan</p>
+        <p class="text-xs text-gray-500">Organize your daily learning</p>
+      </button>
+    </div>
+
+  </div>
+
+  <div class="card mt-5">
+    <h3 class="font-bold mb-4">Your Upcoming Study Tasks</h3>
+    <div id="dashboard-tasks" class="text-sm text-gray-500">
+      No tasks yet. Create your study plan!
+    </div>
+  </div>
+
+</section>
+
+<!-- ================= AI TUTOR ================= -->
+
+<section id="tutor" class="page">
+
+  <div class="mb-6">
+    <h2 class="text-2xl font-bold">AI Learning Assistant 🤖</h2>
+    <p class="text-gray-500 text-sm mt-2">
+      Ask questions and learn concepts in simple language.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+    <div class="card lg:col-span-2">
+      <div class="flex justify-between items-center border-b pb-4 mb-4">
+        <div>
+          <h3 class="font-bold">LearnIQ AI Tutor</h3>
+          <p class="text-xs text-green-600">● Demo assistant available</p>
+        </div>
+        <button onclick="clearChat()" class="text-xs text-indigo-600">Clear Chat</button>
+      </div>
+
+      <div id="chat-box" class="h-96 overflow-y-auto mb-4">
+        <div class="chat bot">
+          Hello! 👋 I'm your LearnIQ AI Tutor.
+
+          Ask me anything about your studies. I can explain topics with simple definitions, examples and step-by-step explanations.
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <input id="question-input"
+          placeholder="Ask your question here..."
+          onkeydown="if(event.key==='Enter')sendQuestion()">
+        <button class="primary" onclick="sendQuestion()">Send ➤</button>
+      </div>
+
+      <p class="text-xs text-gray-400 mt-3">
+        Demo mode: answers use built-in educational explanations.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3 class="font-bold mb-4">Suggested Topics</h3>
+
+      <div class="space-y-3">
+        <button class="w-full text-left p-3 bg-purple-50 rounded-xl text-sm"
+          onclick="askSuggestion('Explain Artificial Intelligence')">
+          🧠 Artificial Intelligence
+        </button>
+
+        <button class="w-full text-left p-3 bg-blue-50 rounded-xl text-sm"
+          onclick="askSuggestion('Explain Machine Learning')">
+          💻 Machine Learning
+        </button>
+
+        <button class="w-full text-left p-3 bg-green-50 rounded-xl text-sm"
+          onclick="askSuggestion('Explain Data Structures')">
+          📚 Data Structures
+        </button>
+
+        <button class="w-full text-left p-3 bg-amber-50 rounded-xl text-sm"
+          onclick="askSuggestion('Explain Neural Networks')">
+          🔬 Neural Networks
+        </button>
+
+        <button class="w-full text-left p-3 bg-pink-50 rounded-xl text-sm"
+          onclick="askSuggestion('Explain Python Programming')">
+          🐍 Python Programming
+        </button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= STUDY PLANNER ================= -->
+
+<section id="planner" class="page">
+
+  <div class="mb-6">
+    <h2 class="text-2xl font-bold">Smart Study Planner 📅</h2>
+    <p class="text-gray-500 text-sm mt-2">
+      Organize your subjects and manage your daily learning goals.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+    <div class="card lg:col-span-1">
+      <h3 class="font-bold mb-5">Add Study Task</h3>
+
+      <form onsubmit="addTask(event)">
+        <label class="text-sm font-semibold">Subject / Topic</label>
+        <input id="task-name" placeholder="e.g. Java Programming" required class="mt-2 mb-4">
+
+        <label class="text-sm font-semibold">Study Date</label>
+        <input id="task-date" type="date" required class="mt-2 mb-4">
+
+        <label class="text-sm font-semibold">Study Time</label>
+        <input id="task-time" type="time" required class="mt-2 mb-4">
+
+        <label class="text-sm font-semibold">Duration (minutes)</label>
+        <input id="task-duration" type="number" min="5" max="600"
+          value="60" required class="mt-2 mb-4">
+
+        <label class="text-sm font-semibold">Priority</label>
+        <select id="task-priority" class="mt-2 mb-5">
+          <option>High</option>
+          <option selected>Medium</option>
+          <option>Low</option>
+        </select>
+
+        <button class="primary w-full">+ Add Study Task</button>
+      </form>
+    </div>
+
+    <div class="card lg:col-span-2">
+      <div class="flex flex-wrap justify-between gap-3 items-center mb-5">
+        <h3 class="font-bold">My Study Schedule</h3>
+        <span class="text-xs bg-indigo-50 text-indigo-700 px-3 py-2 rounded-lg"
+          id="planner-count">0 Tasks</span>
+      </div>
+
+      <div id="task-list" class="space-y-3">
+        <p class="text-center text-gray-400 py-10">
+          No study tasks added yet.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card mt-5">
+    <h3 class="font-bold mb-4">Study Planning Tips 💡</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+      <div class="bg-purple-50 p-4 rounded-xl">
+        <b>Stay Consistent</b>
+        <p class="text-gray-500 mt-2">Study a little every day.</p>
+      </div>
+      <div class="bg-blue-50 p-4 rounded-xl">
+        <b>Take Breaks</b>
+        <p class="text-gray-500 mt-2">Try 25 minutes of study followed by a 5-minute break.</p>
+      </div>
+      <div class="bg-green-50 p-4 rounded-xl">
+        <b>Revise Regularly</b>
+        <p class="text-gray-500 mt-2">Review previous topics to remember better.</p>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<footer class="text-center text-xs text-gray-400 mt-10 pb-5">
+  LearnIQ © 2026 | AI Personalized Learning Platform
+</footer>
+
+</main>
+
+<script>
+/* ================= NAVIGATION ================= */
+
+function showPage(page,button) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(page).classList.add('active');
+
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  if(button) button.classList.add('active');
+
+  const titles = {
+    dashboard:'Student Dashboard',
+    tutor:'AI Tutor',
+    planner:'Smart Study Planner'
+  };
+
+  document.getElementById('header-title').textContent=titles[page];
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+function toggleMenu() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+/* ================= STUDY TASKS ================= */
+
+let tasks = JSON.parse(localStorage.getItem('learniq_tasks') || '[]');
+
+function saveTasks() {
+  localStorage.setItem('learniq_tasks',JSON.stringify(tasks));
+}
+
+function addTask(e) {
+  e.preventDefault();
+
+  const task = {
+    id:Date.now(),
+    name:document.getElementById('task-name').value.trim(),
+    date:document.getElementById('task-date').value,
+    time:document.getElementById('task-time').value,
+    duration:document.getElementById('task-duration').value,
+    priority:document.getElementById('task-priority').value,
+    done:false
+  };
+
+  if(!task.name) return;
+
+  tasks.push(task);
+  saveTasks();
+  renderTasks();
+  e.target.reset();
+  document.getElementById('task-duration').value=60;
+}
+
+function toggleTask(id) {
+  tasks=tasks.map(t=>t.id===id?{...t,done:!t.done}:t);
+  saveTasks();
+  renderTasks();
+}
+
+function deleteTask(id) {
+  tasks=tasks.filter(t=>t.id!==id);
+  saveTasks();
+  renderTasks();
+}
+
+function renderTasks() {
+  const list=document.getElementById('task-list');
+  const dashboard=document.getElementById('dashboard-tasks');
+
+  tasks.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+
+  document.getElementById('planner-count').textContent=tasks.length+' Tasks';
+
+  if(!tasks.length) {
+    list.innerHTML='<p class="text-center text-gray-400 py-10">No study tasks added yet.</p>';
+    dashboard.textContent='No tasks yet. Create your study plan!';
+  } else {
+    list.innerHTML=tasks.map(t=>`
+      <div class="task ${t.done?'done':''} flex gap-3 items-center border rounded-xl p-4">
+        <input type="checkbox" class="w-5 h-5 accent-indigo-600"
+          ${t.done?'checked':''}
+          onchange="toggleTask(${t.id})">
+        <div class="flex-1 min-w-0">
+          <p class="task-name font-semibold text-sm break-words">${escapeHTML(t.name)}</p>
+          <p class="text-xs text-gray-400 mt-1">
+            ${t.date} • ${t.time} • ${t.duration} minutes
+          </p>
+          <span class="text-xs ${t.priority==='High'?'text-red-500':t.priority==='Medium'?'text-amber-600':'text-green-600'}">
+            ${t.priority} Priority
+          </span>
+        </div>
+        <button onclick="deleteTask(${t.id})" class="text-red-400 px-2">✕</button>
+      </div>
+    `).join('');
+
+    dashboard.innerHTML=tasks.filter(t=>!t.done).slice(0,4).map(t=>`
+      <div class="flex justify-between gap-3 py-3 border-b text-sm">
+        <span>${escapeHTML(t.name)}</span>
+        <span class="text-gray-400">${t.date} • ${t.time}</span>
+      </div>
+    `).join('') || 'All your study tasks are completed! 🎉';
+  }
+
+  updateDashboard();
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g,c=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;',
+    '"':'&quot;',"'":'&#39;'
+  })[c]);
+}
+
+function updateDashboard() {
+  const total=tasks.length;
+  const completed=tasks.filter(t=>t.done).length;
+  const rate=total?Math.round(completed/total*100):0;
+
+  document.getElementById('completed-stat').textContent=completed;
+  document.getElementById('total-stat').textContent=total;
+  document.getElementById('rate-stat').textContent=rate+'%';
+  document.getElementById('circle-rate').textContent=rate+'%';
+  document.getElementById('overall-progress').style.width=rate+'%';
+  document.getElementById('progress-circle').style.setProperty('--angle',(rate*3.6)+'deg');
+}
+
+/* ================= AI TUTOR DEMO ================= */
+
+const knowledge = {
+  'artificial intelligence':`Artificial Intelligence (AI) is a branch of computer science that makes machines perform tasks that normally require human intelligence.
+
+Example: A voice assistant that understands your questions.
+
+Main applications:
+1. Robotics
+2. Healthcare
+3. Education
+4. Self-driving cars
+
+In simple words: AI teaches computers to perform intelligent tasks.`,
+
+  'machine learning':`Machine Learning is a branch of AI that allows computers to learn patterns from data and make predictions.
+
+Example: Email spam detection.
+
+Types:
+1. Supervised Learning
+2. Unsupervised Learning
+3. Reinforcement Learning
+
+Example: A model learns from previous exam results to predict student performance.`,
+
+  'data structures':`Data Structures are ways of organizing and storing data so that it can be used efficiently.
+
+Important types:
+1. Array - Stores elements in order.
+2. Linked List - Elements are connected using links.
+3. Stack - Follows LIFO.
+4. Queue - Follows FIFO.
+5. Tree - Organizes data hierarchically.
+
+Example: A stack of plates represents a stack data structure.`,
+
+  'neural networks':`A Neural Network is a machine learning model inspired by the human brain.
+
+It contains:
+1. Input Layer
+2. Hidden Layer
+3. Output Layer
+
+Example: A neural network can learn to identify handwritten numbers.
+
+The network learns by adjusting weights during training.`,
+
+  'python programming':`Python is a high-level programming language known for its simple syntax.
+
+Example:
+
+name = "Student"
+print("Hello", name)
+
+Applications:
+1. Web development
+2. AI and Machine Learning
+3. Data Science
+4. Automation
+
+Python is popular because it is beginner-friendly.`
+};
+
+function createMessage(text,type) {
+  const div=document.createElement('div');
+  div.className='chat '+type;
+  div.textContent=text;
+  const box=document.getElementById('chat-box');
+  box.appendChild(div);
+  box.scrollTop=box.scrollHeight;
+}
+
+function tutorAnswer(question) {
+  const q=question.toLowerCase();
+
+  for(const key in knowledge) {
+    if(q.includes(key)) return knowledge[key];
+  }
+
+  if(q.includes('hello') || q.includes('hi')) {
+    return 'Hello! 👋 Welcome to LearnIQ. What topic would you like to learn today?';
+  }
+
+  if(q.includes('what is') || q.includes('define') || q.includes('explain')) {
+    const topic=question.replace(/^(what is|define|explain)\s+/i,'');
+    return `Let's understand ${topic}!
+
+A simple way to learn this topic is:
+1. First understand its basic definition.
+2. Learn its main concepts.
+3. Look at a real-life example.
+4. Practice questions.
+
+This is a demo response. Connect a real AI model to receive detailed, topic-specific explanations.`;
+  }
+
+  return `Good question!
+
+Let's break it into smaller parts:
+1. Understand the basic concept.
+2. Identify the important terms.
+3. Study a practical example.
+4. Practice what you learned.
+
+This is the built-in demo tutor. Real AI integration will provide more accurate and detailed answers.`;
+}
+
+function sendQuestion() {
+  const input=document.getElementById('question-input');
+  const question=input.value.trim();
+
+  if(!question) return;
+
+  createMessage(question,'user');
+  input.value='';
+
+  setTimeout(()=>{
+    createMessage(tutorAnswer(question),'bot');
+  },400);
+}
+
+function askSuggestion(question) {
+  document.getElementById('question-input').value=question;
+  sendQuestion();
+}
+
+function clearChat() {
+  document.getElementById('chat-box').innerHTML=`
+    <div class="chat bot">Hello again! 👋 What would you like to learn?</div>
+  `;
+}
+
+/* ================= INITIALIZATION ================= */
+
+const dateInput=document.getElementById('task-date');
+const today=new Date();
+dateInput.min=[
+  today.getFullYear(),
+  String(today.getMonth()+1).padStart(2,'0'),
+  String(today.getDate()).padStart(2,'0')
+].join('-');
+
+renderTasks();
+</script>
+
+</body>
+</html>
